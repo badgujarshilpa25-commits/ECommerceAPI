@@ -14,13 +14,13 @@ namespace ECommerceAPI.Controllers
     {
         private readonly IOrderService _orderService;
         private readonly IEmailQueue _emailQueue;
-        ILogger<OrdersController> logger;
+        private readonly ILogger<OrdersController> _logger;
 
         public OrdersController(IOrderService orderService, IEmailQueue emailQueue, ILogger<OrdersController> logger)
         {
             _orderService = orderService;
             _emailQueue = emailQueue;
-            this.logger = logger;
+            this._logger = logger;
         }
 
         [HttpPost]
@@ -28,7 +28,10 @@ namespace ECommerceAPI.Controllers
         {
             try
             {
-                logger.LogInformation("Order Creation started.");
+                _logger.LogInformation("Order Creation started.");
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
+
                 var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 if (!int.TryParse(userIdStr, out var userId))
                     return Unauthorized();
@@ -41,13 +44,13 @@ namespace ECommerceAPI.Controllers
                         Subject = "Order Created",
                         Body = $"Your Order #{order.Id} has been created."
                     });
-                logger.LogInformation("Order Creation completed successfully. Order ID: {OrderId}", order.Id);
+                _logger.LogInformation("Order Creation completed successfully. Order ID: {OrderId}", order.Id);
 
                 return CreatedAtAction(nameof(GetOrderById), new { orderId = order.Id }, order);
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Error occurred while creating order.");
+                _logger.LogError(ex, "Error occurred while creating order.");
                 return StatusCode(500, "An error occurred while processing your request.");
             }
         }
@@ -55,7 +58,7 @@ namespace ECommerceAPI.Controllers
         [HttpGet("my")]
         public async Task<IActionResult> GetUserOrders()
         {
-            logger.LogInformation("Retrieving user orders.");
+            _logger.LogInformation("Retrieving user orders.");
             try
             {
                 var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -63,12 +66,12 @@ namespace ECommerceAPI.Controllers
                     return Unauthorized();
 
                 var orders = await _orderService.GetUserOrdersAsync(userId);
-                logger.LogInformation("User Orders retrieved. Count: {Count}", orders.Count());
+                _logger.LogInformation("User Orders retrieved. Count: {Count}", orders.Count());
                 return Ok(orders);
             }
             catch (Exception ex)
             {
-                logger.LogError(ex,"Error occurred while retrieving user orders.");
+                _logger.LogError(ex,"Error occurred while retrieving user orders.");
                 return StatusCode(500, "An error occurred while processing your request.");
             }
         }
@@ -78,7 +81,7 @@ namespace ECommerceAPI.Controllers
         {
             try
             {
-                logger.LogInformation("Retrieving order by ID: {OrderId}", orderId);
+                _logger.LogInformation("Retrieving order by ID: {OrderId}", orderId);
                 var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 if (!int.TryParse(userIdStr, out var userId))
                     return Unauthorized();
@@ -89,7 +92,7 @@ namespace ECommerceAPI.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Error occurred while retrieving order by ID.");
+                _logger.LogError(ex, "Error occurred while retrieving order by ID.");
                 return StatusCode(500, "An error occurred while processing your request.");
             }
         }
