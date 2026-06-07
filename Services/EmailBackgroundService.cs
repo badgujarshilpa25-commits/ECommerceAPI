@@ -4,7 +4,6 @@
     {
         private readonly IEmailQueue _emailQueue;
         private readonly IEmailSender _emailSender;
-        //private readonly IServiceScopeFactory _scopeFactory;
         private readonly ILogger<EmailBackgroundService> _logger;
 
         public EmailBackgroundService(

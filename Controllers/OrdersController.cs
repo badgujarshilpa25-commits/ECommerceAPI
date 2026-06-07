@@ -33,14 +33,17 @@ namespace ECommerceAPI.Controllers
                     return BadRequest(ModelState);
 
                 var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var email = User.FindFirst(ClaimTypes.Email)?.Value;
+
                 if (!int.TryParse(userIdStr, out var userId))
                     return Unauthorized();
 
                 var order = await _orderService.CreateOrderAsync(userId, dto);
+                
                 await _emailQueue.QueueEmailAsync(
                     new EmailRequest
                     {
-                        To = order.User.Email?? "test@example.com",
+                        To = email ?? "test@example.com",
                         Subject = "Order Created",
                         Body = $"Your Order #{order.Id} has been created."
                     });
