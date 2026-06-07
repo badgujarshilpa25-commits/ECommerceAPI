@@ -58,7 +58,7 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-app.UseMiddleware<CustomMiddleware>();
+app.UseMiddleware<GlobalExceptionMiddleware>();
 
 app.UseAuthentication();
 

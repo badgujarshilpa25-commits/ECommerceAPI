@@ -1,9 +1,9 @@
 ﻿namespace ECommerceAPI.Middleware
 {
-    public class CustomMiddleware 
+    public class GlobalExceptionMiddleware 
     {
         private readonly RequestDelegate _requestDelegate;
-        public CustomMiddleware(RequestDelegate requestDelegate)
+        public GlobalExceptionMiddleware(RequestDelegate requestDelegate)
         {
             _requestDelegate = requestDelegate;
         }
