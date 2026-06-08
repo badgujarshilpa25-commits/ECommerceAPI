@@ -54,6 +54,9 @@ namespace EcommerceAPI.Controllers
         {
             try
             {
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
+                
                 var newProduct = await _productService.Create(product);
                 return Ok(newProduct);
             }
@@ -69,6 +72,9 @@ namespace EcommerceAPI.Controllers
         {
             try
             {
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
+
                 var updatedProduct = await _productService.Update(product);
                 return Ok(updatedProduct);
             }

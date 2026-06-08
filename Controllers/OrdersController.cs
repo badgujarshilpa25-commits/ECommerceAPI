@@ -29,6 +29,7 @@ namespace ECommerceAPI.Controllers
             try
             {
                 _logger.LogInformation("Order Creation started.");
+                
                 if (!ModelState.IsValid)
                     return BadRequest(ModelState);
 
@@ -47,6 +48,7 @@ namespace ECommerceAPI.Controllers
                         Subject = "Order Created",
                         Body = $"Your Order #{order.Id} has been created."
                     });
+
                 _logger.LogInformation("Order Creation completed successfully. Order ID: {OrderId}", order.Id);
 
                 return CreatedAtAction(nameof(GetOrderById), new { orderId = order.Id }, order);
@@ -85,12 +87,16 @@ namespace ECommerceAPI.Controllers
             try
             {
                 _logger.LogInformation("Retrieving order by ID: {OrderId}", orderId);
+                
                 var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                
                 if (!int.TryParse(userIdStr, out var userId))
                     return Unauthorized();
 
                 var order = await _orderService.GetOrderByIdAsync(orderId, userId);
+                
                 if (order == null) return NotFound();
+                
                 return Ok(order);
             }
             catch (Exception ex)

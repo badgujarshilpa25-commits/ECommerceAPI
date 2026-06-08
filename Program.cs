@@ -1,6 +1,7 @@
 using EcommerceAPI.Data;
 using EcommerceAPI.Services;
 using ECommerceAPI.Middleware;
+using ECommerceAPI.Model;
 using ECommerceAPI.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -34,6 +35,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
+
+builder.Services.Configure<SmtpSettings>(
+    builder.Configuration.GetSection("SmtpSettings"));
 
 builder.Services.AddControllers()
     .AddJsonOptions(o =>
