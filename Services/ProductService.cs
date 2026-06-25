@@ -14,12 +14,12 @@ namespace EcommerceAPI.Services
             _logger = logger;
         }
 
-        IEnumerable<Product> IProductService.GetAll()
+        public async Task<IEnumerable<Product>> GetAll()
         {
             try
             {
                 _logger.LogInformation("Fetching all products from the database.");
-                return _context.Products.ToList();
+                 return _context.Products;
 
             }
             catch (Exception ex)
@@ -29,7 +29,7 @@ namespace EcommerceAPI.Services
             }
         }
 
-        Product IProductService.GetById(int id)
+        public async Task<Product> GetById(int id)
         {
             try
             {
